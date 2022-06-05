@@ -1,0 +1,395 @@
+:root {
+    --blanco: #ffffff;
+    --oscuro: #212123;    
+    --primario: #036fbd;
+    --secundario: #0d61c2;
+    --terciario: #0097A7;
+    --gris: #d1d1d1;
+    --grisSecundiario: #b6b4b4;
+    --grisOscuro: #4b4a4a;
+    --verde: #08b347;
+    --rojo: #ec1d1d;
+    --verdeSecundario: #00b849;
+    --extra:#002138;
+    --extraTerciario: #03bdae;
+    --placeholder: #a19f9f;
+    --boton: #1199fb;    
+    --titulo: #4dc7f7;
+    
+}
+
+html{
+    font-family: 'Roboto', sans-serif;
+    font-size: 62.5%;
+}
+
+*, *:before, *:after{
+    box-sizing: inherit;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--gris);
+}
+
+.body {
+    background-image: linear-gradient(to right, var(--primario) , #4B00C4, #4176D6);
+}
+
+h1 {
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--blanco);
+    
+}
+h2 {
+    font-size: 3.0rem;    
+}
+
+h3 {
+    font-size: 2.6rem;
+}
+
+h4 {
+    font-size: 2.2rem;
+}
+
+
+header {
+    background-color: var(--primario);
+    padding-left: 1rem;
+    text-align: center;
+}
+
+.contenedor {
+    max-width: 120rem;
+    margin: 0 auto;
+}
+
+/************************* LOGIN ******************************/
+.login {
+    background-color: var(--extra);
+    padding: 1rem;
+    border-radius: .5rem;
+    width: 40rem;
+    height: 45rem;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    border-radius: 2rem;
+}
+
+.login .login__icon{
+    align-self: center;    
+    margin: 1rem;
+}
+
+.login .login__icon .icon {
+    font-size: 9rem;
+    margin-bottom: 1rem;
+    color: var(--extraTerciario);
+}
+
+.login .form{
+    align-self: center;
+    width: 60%;
+}
+
+.login .form div {
+    margin-bottom: 3rem;
+}
+
+
+.login .form div label {
+    font-size: 1.6rem;
+    color: var(--extraTerciario);
+    font-weight: 800;
+}
+
+.login .form div input {
+    width: 100%;
+    font-size: 1.5rem;
+    padding: .3rem 1rem;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid var(--blanco);
+    color: var(--blanco);
+    margin: .5rem 0;
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
+.login .form div input:focus {
+    border-bottom: 2px solid var(--extraTerciario);
+}
+
+.login .form .boton {
+    display: block;
+    width: 13rem;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin: auto;
+    padding: .9rem;
+    background-color: var(--boton);
+    border-radius: .7rem;
+    color: var(--blanco);
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.login .form .boton:hover {
+    background-color: var(--primario);
+    transform: translateY(.1rem);    
+}
+
+
+/************************ PANEL *************************/
+.contenedor-panel {
+    flex-grow: 1;
+    display: flex;
+}
+.aside {
+    background-color: var(--extra);
+    padding: 1rem 2rem;
+    width: 22%;
+    color: var(--blanco);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.aside h2 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-top: 2rem;
+    color: var(--gris);
+    margin-bottom: 3rem;
+}
+
+.aside .info p {
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+    background-color: var(--titulo);
+    padding: 1rem .5rem;
+    color: var(--oscuro);
+    margin-bottom: 2rem;
+    margin: 2rem 2rem;
+    border-radius: .2rem;
+    cursor: pointer;
+}
+
+.aside .info p:hover {
+    background-color: var(--primario);
+    color: var(--blanco);
+    transform: translateY(.1rem);    
+}
+
+.aside .crear__perfil {
+    margin-bottom:5rem;
+}
+
+.aside .crear__perfil h4 {
+    font-size: 2.1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--blanco);
+}
+.aside .crear__perfil .datos {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-right: 2rem;
+}
+
+.aside .crear__perfil .datos label {
+    flex-basis: 55%;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--blanco);
+    margin-left: 1rem;
+    color: var(--titulo);
+}
+
+.aside .crear__perfil .datos label:first-child {
+    font-size: 1.6rem;
+}
+
+.aside .crear__perfil .datos input {
+    margin: 2rem 0;
+    letter-spacing: 1px;
+}
+
+
+.aside .crear__perfil .datos input,
+.aside .crear__perfil .datos select {
+    width: 10.5rem;
+    font-size: 1.4rem;
+    padding: .5rem;
+    height: 2rem;
+    color: var(--secundario);
+    font-weight: 800;
+}
+
+.aside .crear__perfil .btnCrear {
+    display: flex;
+    justify-content: flex-end;
+    margin: 2rem 4rem;
+}
+.aside .crear__perfil .btnCrear button {
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1rem .8rem;
+    width: 25%;
+    background-color: var(--titulo);
+    border: none;
+    border-radius: .4rem;
+    cursor: pointer;
+}
+
+.aside .crear__perfil button:hover {
+    background-color: var(--primario);
+    transform: translateY(.1rem);    
+    color: var(--blanco);
+}
+
+.aside > button {
+    /* align-self: flex-end; */
+    background-color: rgb(223, 43, 11);
+    color: var(--blanco);
+    border: none;
+    padding: .8rem 1rem;
+    border-radius: .5rem;
+    font-size: 1.6rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+
+.aside > button:hover {
+    background-color: rgb(175, 32, 7);
+}
+
+.contenedor-tabla {
+    flex-grow: 1;
+    margin-top: 5rem;
+    margin-left: 15rem;
+}
+
+.tablas {
+    max-width: 70rem;
+}
+table th {
+    background-color: var(--titulo);
+    font-weight: 900;
+}
+tbody tr{
+    background-color: var(--blanco);
+}
+
+table,td, th {  
+    border: 3px solid var(--terciario);
+    border-collapse: collapse;
+    margin-top: 3rem;
+}
+
+table td, table th {
+    padding: .5rem;
+    font-size: 1.6rem;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+table th:nth-child(1) {
+    width: 10%;
+  }
+  
+
+table th:nth-child(2) {
+    width: 25%;
+}
+  
+
+table th:nth-child(3) {
+    width: 25%;
+}
+  
+
+table th:nth-child(4) {
+    width: 25%;
+}
+
+table th:nth-child(5) {
+    width: 15%;
+}
+
+
+th{
+    font-size: 1.5rem;
+}
+
+td {
+    text-align: center;
+    font-size: 1.4rem;    
+}
+
+table .action .btn_action {
+    background-color: var(--rojo);
+    padding: .5rem 1rem;
+    border-radius: .7rem;
+    color: var(--blanco);
+    font-size: 1.3rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+table .action .btn_action:hover {
+    background-color: rgb(175, 32, 7);
+    transform: translateY(.1rem);    
+}
+
+.circulo{
+    height: 1rem;
+    width: 1rem;
+    background-color: var(--grisSecundiario);
+    border: 2px solid var(--grisOscuro);
+    border-radius: 50%;
+    margin: auto;
+}
+
+.circulo.verde {
+    background-color: var(--verde);
+    box-shadow: 0 0 4px 1.5px var(--verde);
+    border: 2px solid var(--grisOscuro);
+}
+
+.circulo.rojo {
+    background-color: var(--rojo);
+    box-shadow: 0 0 3px 1px var(--rojo);
+    border: 2px solid var(--oscuro);
+}
+
+
+
+footer{
+    background-color: var(--primario);    
+    color: var(--blanco);
+    text-align: center;
+}
+
+footer p{
+    font-size: 1.4rem;
+    padding: 0;
+    margin: 1rem;
+}

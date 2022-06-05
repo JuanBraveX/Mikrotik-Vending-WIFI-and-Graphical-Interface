@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="estilos/normalize.css" />
+    <link rel="stylesheet" href="estilos/style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="contenedor">
+        <h1>Microtik manager</h1>
+      </div>
+    </header>
+
+    <main class="contenedor-panel">
+      <aside class="aside">
+        <div class="info">
+          <h2><b class="fa fa-tasks"></b> Dashboard</h2>
+          <p id="perfiles">Todos los perfiles</p>
+          <p id="perfilesConec">Perfiles activos</p>
+        </div>
+
+        <form class="crear__perfil">
+          <h4>Agregar perfil nuevo</h4>
+          <div class="datos">
+            <label for="clave">Ingresa una clave:</label>
+            <input type="text" name="clave" id="clave" />
+            <label for="tiempo">Seleccionaa el tiempo:</label>
+            <select name="tiempo" id="tiempo">
+              <option value="00:30:00">30 minutos</option>
+              <option value="01:00:00">1 hora</option>
+              <option value="02:00:00">2 horas</option>
+            </select>
+          </div>
+          <div class="btnCrear">
+            <button class="btn_crear" type="submit">Crear</button>
+          </div>
+        </form>
+
+        <button id="btn_cerrar">Cerrar sesión</button>
+      </aside>
+      <div class="contenedor-tabla">
+        <h2>Perfiles</h2>
+        <section class="tablas">
+          <table class="table-mostrar">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Clave</th>
+                <th id="active_time">Tiempo limite</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <template id="template-datos">
+            <tr>
+              <td class="id"></td>
+              <td class="clave"></td>
+              <td class="limituptime"></td>
+              <td class="conectado">
+                <div class="circulo"></div>
+              </td>
+              <td class="action">
+                <button class="btn_action" type="submit"
+                  onclick="eliminarPerfil(this)">Eliminar</button>
+              </td>
+            </tr>
+          </template>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2021 - TEAM SISTEMAS</p>
+    </footer>
+
+    <script>
+      const d = document,
+        template = document.getElementById("template-datos").content,
+        tabla = document.querySelector(".table-mostrar tbody"),
+        perfiles = document.getElementById("perfiles"),
+        perfilesConec = document.getElementById("perfilesConec"),
+        btn_cerrar = document.getElementById("btn_cerrar"),
+        btn_crear = document.querySelector(".btn_crear"),
+        clave = document.getElementById("clave"),
+        tiempo = document.getElementById("tiempo"),
+        active_time = document.getElementById("active_time"),
+        fragment = document.createDocumentFragment();
+
+      const ipServer = "192.168.1.3";
+
+      ip = localStorage.getItem("ip");
+      user = localStorage.getItem("user");
+      pass = localStorage.getItem("pass");
+
+      const obtenerDatos = async () => {
+        try {
+          let res = await fetch(
+            `http://${ipServer}/mikrotik/ejemplo1.php?ip=${ip}&user=${user}&pass=${pass}`
+          );
+          // console.log(res);
+          active_time.textContent = "Tiempo limite";
+          let json = await res.json();
+          eliminarDatosTabla();
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+
+          console.log(json);
+          json.forEach((element, index) => {
+            template.querySelector(".id").textContent = index + 1;
+            template.querySelector(".clave").textContent = element.name;
+            template.querySelector(".limituptime").textContent =
+              element.limituptime;
+            template.querySelector(".btn_action").dataset.id = element.id;
+            //Boton para eliminar perfil git add -A
+            const boton = template.querySelector(".btn_action");
+            if (element.uptime != element.limituptime) {
+              template.querySelector(".circulo").classList.remove("rojo");
+              template.querySelector(".circulo").classList.add("verde");
+            } else {
+              template.querySelector(".circulo").classList.remove("verde");
+              template.querySelector(".circulo").classList.add("rojo");
+            }
+            let clone = d.importNode(template, true);
+            fragment.appendChild(clone);
+          });
+          tabla.appendChild(fragment);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      d.addEventListener("DOMContentLoaded", obtenerDatos);
+
+      perfilesConec.addEventListener("click", async () => {
+        try {
+          let res = await fetch(
+            `http://${ipServer}/mikrotik/active.php?ip=${ip}&user=${user}&pass=${pass}`
+          );
+          // console.log(res);
+          let json = await res.json();
+          active_time.textContent = "Tiempo activo";
+
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+          eliminarDatosTabla();
+          // console.log(json);
+          let contador = 0;
+          json.forEach((element) => {
+            //Si elemento.uptime es igual a elemento.limituptime, no se muestra
+            if (element.uptime != element.limituptime) {
+              template.querySelector(".id").textContent = contador + 1;
+              contador++;
+              template.querySelector(".clave").textContent = element.user;
+              template.querySelector(".limituptime").textContent =
+                element.uptime;
+              template.querySelector(".btn_action").dataset.id = element.id;
+              // template.querySelector(".uptime").textContent = element.uptime;
+              if (element.uptime != element.limituptime) {
+                template.querySelector(".circulo").classList.add("verde");
+              } else {
+                template.querySelector(".circulo").classList.remove("verde");
+              }
+              let clone = d.importNode(template, true);
+              fragment.appendChild(clone);
+            }
+          });
+          tabla.appendChild(fragment);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+
+      perfiles.addEventListener("click", obtenerDatos);
+
+      btn_cerrar.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+      });
+
+      btn_crear.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          let res = await fetch(
+            `http://${ipServer}/mikrotik/crear.php?ip=${ip}&user=${user}&pass=${pass}&name=${clave.value}&limtime=${tiempo.value}`
+          );
+          // console.log(res);
+          let json = await res.json();
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+          if (json.crear == "n") {
+            alert("El perfil ya existe");
+          } else {
+            clave.value = "";
+            obtenerDatos();
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+
+      eliminarPerfil = async (element) =>{
+        const id = element.dataset.id;
+        try {
+          let res = await fetch(
+            `http://${ipServer}/mikrotik/delete.php?ip=${ip}&user=${user}&pass=${pass}&id=${id}`
+          );
+          let json = await res.json();
+          if (!res.ok) throw { status: res.status, statusText: res.statusText };
+          obtenerDatos();
+        } catch (error) {
+          console.log(error);
+        }        
+      };
+
+      eliminarDatosTabla = () => {
+        tabla.innerHTML = "";
+      }
+
+      
+    </script>
+  </body>
+</html>

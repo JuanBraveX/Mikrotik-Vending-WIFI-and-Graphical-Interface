@@ -1,0 +1,5 @@
+<?php
+class Config{
+    const SECRET = "2W4YDISUR7DYRJ5JS7DK4KJD7SKDY4321";
+
+}

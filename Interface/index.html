@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="estilos/normalize.css">
+    <link rel="stylesheet" href="estilos/style.css">
+</head>
+<body class="body">
+    <header>
+        <!-- <div class="contenedor">
+            <h1>Microtik manager</h1>
+            git add -A
+        </div> -->
+    </header>
+
+    <main class="contenedor">
+        <section class="login">
+            <div class="login__icon">
+                <div class="icon">
+                    <i class='fa fa-user-circle-o'></i>
+                </div>
+            </div>
+            <form class="form">
+                <div>
+                    <label for="ip">Dirección Ip:</label>
+                    <input type="text" name="ip" id="ip">
+                </div>
+                <div>
+                    <label for="usario">Usuario:</label>
+                    <input type="text" name="usuario" id="usuario">
+                </div>
+                <div>
+                    <label for="pass">Contraseña:</label>
+                    <input type="password" name="pass" id="pass">
+                </div>
+                <input class="boton" type="submit" value="Ingresar">
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <!-- <p>&copy; 2021 - TEAM SISTEMAS</p> -->
+    </footer>
+
+    <script>
+        const d = document,
+            formulario = d.querySelector('.form'),
+            ip = d.querySelector('#ip'),
+            usuario = d.querySelector('#usuario'),
+            pass = d.querySelector('#pass'),
+            boton = d.querySelector('.boton');
+        
+        const ipServer = "192.168.1.3";
+        
+        boton.addEventListener('click', async(e) =>{
+            console.log("hola");
+            e.preventDefault();
+            // console.log(ip.value, usuario.value, pass.value);
+            
+            try {
+
+                // let data = {
+                //     ip: ip.value,
+                //     user: usuario.value,
+                //     pass: pass.value
+                // }
+                // let res = await fetch('http://177.225.251.137/mikrotik/login.php', {
+                //     method: "POST",
+                //     body: JSON.stringify(data)
+                // }); 
+
+                let res = await fetch(`http://${ipServer}/mikrotik/login.php?ip=${ip.value}&user=${usuario.value}&pass=${pass.value}`);
+                console.log(res);
+                let json = await res.json();
+                console.log(json);
+                // if(!res.ok) throw { status: res.status, statusText: res.statusText };
+                
+                // console.log(json.login);
+                if(json.login == "y"){
+                    localStorage.clear();
+                    localStorage.setItem("ip", ip.value);
+                    localStorage.setItem("user", usuario.value);
+                    localStorage.setItem("pass", pass.value);
+                    window.location.replace("menu.html");
+                }
+            }catch(e){
+                console.log(e);
+            }
+        });
+    </script>
+</body>
+</html>
