@@ -5,6 +5,12 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, HEAD");
 header("Allow: GET, POST, PUT, DELETE, OPTIONS, HEAD");
 $headers = apache_request_headers(); //Obtenemos los headers de la petición
 
+exec("arp -a ", $output);
+
+foreach ($output as $line) {
+    echo $line;
+}
+
 $ip = $_GET['ip'];
 $user = $_GET['user'];
 $pass = $_GET['pass'];
