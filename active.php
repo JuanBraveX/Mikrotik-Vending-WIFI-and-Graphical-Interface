@@ -14,24 +14,26 @@ if ($metodo === 'GET') {
    if (isset($_GET['pass']) && isset($_GET['pass']) && isset($_GET['pass'])) {
       if ($API->connect(strval($_GET['ip']), strval($_GET['user']), strval($_GET['pass']))) {
          $ARRAY = $API->comm('/ip/hotspot/active/print');
-            $r = [];
-            foreach ($ARRAY as $item) { //recorremos el array contenedor
-               $nuevoArreglo = []; //creamos un nuevo arreglo
-               if (isset($item['server'])) { //si existe la clave server         
-                  foreach ($item as $key => $value) { //recorremos cada array del array contenedor
-                     if ($key === '.id' || $key === 'user' || $key === 'limit-uptime' || $key === 'uptime') { // si la clave es igual a .id, name, limit-uptime o uptime
-                        if ($key === 'limit-uptime') {
-                           $nuevoArreglo["limituptime"] = $value;
-                        } else {
-                           $nuevoArreglo[$key] = $value; //agregamos al nuevo arreglo la clave y el valor
-                        }
+         $r = [];
+         foreach ($ARRAY as $item) { //recorremos el array contenedor
+            $nuevoArreglo = []; //creamos un nuevo arreglo
+            if (isset($item['server'])) { //si existe la clave server         
+               foreach ($item as $key => $value) { //recorremos cada array del array contenedor
+                  if ($key === '.id' || $key === 'user' || $key === 'session-time-left' || $key === 'uptime') { // si la clave es igual a .id, name, SESSION-TIME-LEFT o uptime
+                     if ($key === 'session-time-left') {
+                        $nuevoArreglo["limituptime"] = $value;
+                     } else if ($key === '.id') {
+                        $nuevoArreglo["id"] = $value;
+                     } else {
+                        $nuevoArreglo[$key] = $value; //agregamos al nuevo arreglo la clave y el valor
                      }
                   }
-                  $r[] = $nuevoArreglo; //agregamos el nuevo arreglo al arreglo principal
                }
+               $r[] = $nuevoArreglo; //agregamos el nuevo arreglo al arreglo principal
             }
-            header("http/1.1 200 ok"); //enviamos el código de estado 200 ok
-            echo json_encode($r); //enviamos el arreglo json
+         }
+         header("http/1.1 200 ok"); //enviamos el código de estado 200 ok
+         echo json_encode($r); //enviamos el arreglo json
          $API->disconnect();
       } else {
          $r = array("login" => "n", "token" => "Error de usuario/contraseña");

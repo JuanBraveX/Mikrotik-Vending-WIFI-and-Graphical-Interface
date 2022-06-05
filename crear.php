@@ -6,10 +6,21 @@ header("Allow: GET, POST, PUT, DELETE, OPTIONS, HEAD");
 $headers = apache_request_headers(); //Obtenemos los headers de la petición
 
 exec("arp -a ", $output);
-
+$addres = [];
+$ip;
+$mac;
+$contador = 0;
 foreach ($output as $line) {
-    echo $line;
+    $ip = substr($line, 0, 14);
+    $mac = substr($line, -30, -9);
+    if ($contador > 2) {
+        if (substr($line, -4) == "mico") {
+            $addres[] = array("ip" => $ip, "mac" => $mac);
+        }
+    }
+    $contador++;
 }
+
 
 $ip = $_GET['ip'];
 $user = $_GET['user'];
@@ -46,12 +57,12 @@ if ($metodo === 'GET') {
             $API->disconnect();
             //$ARRAY = $API->parseResponse($READ);
 
-        }else {
+        } else {
             $r = array("crear" => "n");
             echo json_encode($r); //enviamos el arreglo json
         }
-    }else {
+    } else {
         $r = array("crear" => "n");
-            echo json_encode($r); //enviamos el arreglo json
+        echo json_encode($r); //enviamos el arreglo json
     }
 }
