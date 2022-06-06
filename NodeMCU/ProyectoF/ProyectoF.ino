@@ -9,6 +9,15 @@
 #include <ESP8266HTTPClient.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+
+// Month names
+String months[12] = {"J", "F", "M", "A", "E", "J", "F", "U", "S", "O", "N", "D"};
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -36,6 +45,7 @@ String jwt;
 int red = 0;
 int blue = 0;
 int green = 0;
+int yellow = 0;
 int key = 0;
 long randomNumber;
 int contador = 0;
@@ -46,8 +56,8 @@ String clave;
 String minutos;
 String user = "juan";
 String pass = "1234";
-String ip = "192.168.1.3";
-String ipM = "192.168.1.2";
+String ip = "192.168.0.8";
+String ipM = "192.168.0.11";
 
 //-------------------el gestor de wifi----------------------
 void mangerWifi()
@@ -60,7 +70,7 @@ void mangerWifi()
   }
   AsyncWiFiManager wifiManager(&server, &dns);
   delay(1000);
-  
+
   if (rest1 != 0)
   {
     // Descomentar para resetear configuración
@@ -75,28 +85,34 @@ void mangerWifi()
 void cargaRutas()
 {
   // Ruta para cargar el archivo index.html
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/index.html", String(), false, processor); });
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
+  {
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
 
   // Ruta para cargar el archivo style.css
-  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(SPIFFS, "/style.css", "text/css"); });
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest * request)
+  {
+    request->send(SPIFFS, "/style.css", "text/css");
+  });
 
   // Ruta para poner el GPIO alto
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request)
-            {
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest * request)
+  {
     digitalWrite(ledPin, HIGH);
     MIN = MIN + 15;
-    request->send(SPIFFS, "/index.html", String(), false, processor); });
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
 
   // Ruta para poner el GPIO bajo
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request)
-            {
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest * request)
+  {
     digitalWrite(ledPin, LOW);
     if (MIN >= 30) {
       MIN = MIN - 15;
     }
-    request->send(SPIFFS, "/index.html", String(), false, processor); });
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
 }
 
 // Remplazamos el marcador con el estado del  LED
@@ -191,6 +207,15 @@ void setup()
   // Imprimimos la ip que le ha dado nuestro router
   Serial.println(WiFi.localIP());
 
+  // Initialize a NTPClient to get time
+  timeClient.begin();
+  // Set offset time in seconds to adjust for your timezone, for example:
+  // GMT +1 = 3600
+  // GMT +8 = 28800
+  // GMT -1 = -3600
+  // GMT 0 = 0
+  timeClient.setTimeOffset(-18000);
+
   // Start server
   cargaRutas();
   LCD(WiFi.SSID(), WiFi.localIP().toString(), 0);
@@ -203,6 +228,7 @@ void setup()
 void loop()
 {
   fisicos();
+  timeClient.update();
 }
 //------------------------fisicos---------------------
 void fisicos()
@@ -213,11 +239,12 @@ void fisicos()
   {
     LCD("Bienvenido", "Inserte $5", 0);
     Serial.println("Bienvenido");
+    blue = 0;
     green = 1;
   }
   else if (green == 1)
   {
-    green = 1;
+    //green = 1;
     if (coin1 != 0)
     {
       red = 1;
@@ -256,9 +283,10 @@ void fisicos()
       minutos = "00:" + String(tiempo) + ":00";
       red = 0;
       blue = 1;
+      yellow = 1;
       delay(1500);
     }
-    if (button1 != 0)
+    if (button1 != 0 && yellow > 0)
     {
       if (key == 2)
       {
@@ -272,12 +300,19 @@ void fisicos()
       else if (blue == 1 && contador != 0)
       {
         Serial.println("tu clave es: ");
-        randomNumber = random(10000, 99999);
+        randomNumber = random(0, 999);
+        time_t epochTime = timeClient.getEpochTime();
+        //Get a time structure
+        struct tm *ptm = gmtime ((time_t *)&epochTime);
+        int currentMonth = ptm->tm_mon + 1;
+        int currentDayMonth = ptm->tm_mday;
+        int currentSecond = timeClient.getSeconds();
+        String currentMonthName = months[currentMonth - 1];
         char a = 64 + contador;
         String M = String(randomNumber);
         Serial.println(String(a) + M);
-        clave = String(a) + M;
-        LCD("Tu clave es: ", String(a) + M, 0);
+        clave = String(a) + currentMonthName + String(currentDayMonth) + currentSecond + M;
+        LCD("Tu clave es: ", clave, 0);
         blue = 0;
         contador = 0;
         key = 2;
