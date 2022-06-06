@@ -52,48 +52,51 @@ String ipM = "192.168.1.2";
 //-------------------el gestor de wifi----------------------
 void mangerWifi()
 {
-
+  Serial.println("Conectando a la red WiFi...");
+  if (rest1 != 0)
+  {
+    // Descomentar para resetear configuración
+    Serial.println("Borrando configuración");
+  }
   AsyncWiFiManager wifiManager(&server, &dns);
+  delay(1000);
+  
   if (rest1 != 0)
   {
     // Descomentar para resetear configuración
     wifiManager.resetSettings();
+    Serial.println("Borrado configuración");
   }
+  wifiManager.autoConnect("AutoConnect");
   LCD("AutoConnect", "192.168.4.1", 0);
-  wifiManager.autoConnect();
 }
 
 //------------------el cargador de rutas-------------------
 void cargaRutas()
 {
   // Ruta para cargar el archivo index.html
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/index.html", String(), false, processor); });
 
   // Ruta para cargar el archivo style.css
-  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest * request) {
-    request->send(SPIFFS, "/style.css", "text/css");
-  });
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/style.css", "text/css"); });
 
   // Ruta para poner el GPIO alto
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     digitalWrite(ledPin, HIGH);
     MIN = MIN + 15;
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
+    request->send(SPIFFS, "/index.html", String(), false, processor); });
 
   // Ruta para poner el GPIO bajo
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     digitalWrite(ledPin, LOW);
     if (MIN >= 30) {
       MIN = MIN - 15;
     }
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-
-
-
+    request->send(SPIFFS, "/index.html", String(), false, processor); });
 }
 
 // Remplazamos el marcador con el estado del  LED
@@ -121,7 +124,8 @@ void setup()
 {
 
   // Iniciamos  SPIFFS
-  if (!SPIFFS.begin()) {
+  if (!SPIFFS.begin())
+  {
     Serial.println("ha ocurrido un error al montar SPIFFS");
     return;
   }
@@ -140,6 +144,8 @@ void setup()
   LCD("CARGANDO", "ESPERE", 0);
   pinMode(coin, INPUT);
   pinMode(button, INPUT);
+  pinMode(rest, INPUT);
+  rest1 = digitalRead(rest);
 
   randomSeed(analogRead(A0));
   Serial.println("Cargando");
@@ -147,18 +153,36 @@ void setup()
   pinMode(ledPin, OUTPUT);
 
   // Creamos una instancia de la clase WiFiManager
-  //mangerWifi();
-  WiFi.begin("TOTOLINK");
+  mangerWifi();
+  // WiFi.begin("TOTOLINK");
   WiFi.mode(WIFI_STA);
 
   Serial.println("Ya estás conectado");
   // Mientras no se conecte, mantenemos un bucle con reintentos sucesivos
+  int e = 0;
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
     // Esperamos un segundo
     Serial.println("Connecting to WiFi..");
-    
+    if (e == 0)
+    {
+      LCD("Conectando", "a WiFi", 0);
+    }
+    else if (e == 1)
+    {
+      LCD("Conectando", "..", 1);
+    }
+    else if (e == 2)
+    {
+      LCD("Conectando", "....", 1);
+    }
+    else if (e == 3)
+    {
+      LCD("Conectando", "......", 1);
+      e = -1;
+    }
+    e++;
   }
 
   Serial.println();
@@ -208,15 +232,21 @@ void fisicos()
       horas = tiempo / 60;
       minun = tiempo % 60;
 
-      if (horas <= 9) {
+      if (horas <= 9)
+      {
         timer = "0" + String(horas) + ":";
-      } else {
+      }
+      else
+      {
         timer = String(horas) + ":";
       }
 
-      if (minun <= 9) {
+      if (minun <= 9)
+      {
         timer = timer + "0" + String(minun) + ":00";
-      } else {
+      }
+      else
+      {
         timer = timer + String(minun) + ":00";
       }
 
@@ -238,7 +268,6 @@ void fisicos()
         green = 0;
         contador = 0;
         key = 0;
-
       }
       else if (blue == 1 && contador != 0)
       {
@@ -272,7 +301,6 @@ void LCD(String a, String b, int c)
   lcd.print(b);
 }
 
-
 void get()
 {
   WiFiClient client;
@@ -280,9 +308,9 @@ void get()
   Serial.print("[HTTP] begin...\n");
   // configure traged server and url
   http.begin(client, "http://" + ip + "/mikrotik/crear.php?ip=" + ipM + "&user=" + user + "&pass=" + pass + "&name=" + clave + "&limtime=" + minutos); // HTTP
-  //http.addHeader("Content-Type", "application/x-www-form-inlencoded");
+  // http.addHeader("Content-Type", "application/x-www-form-inlencoded");
   Serial.println("http://" + ip + "/mikrotik/crear.php?ip=" + ipM + "&user=" + user + "&pass=" + pass + "&name=" + clave + "&limtime=" + minutos);
-  //http.addHeader("Authorization", jwt);
+  // http.addHeader("Authorization", jwt);
   Serial.print("[HTTP] POST...\n");
   // start connection and send HTTP header and body
   int httpCode = http.GET();
