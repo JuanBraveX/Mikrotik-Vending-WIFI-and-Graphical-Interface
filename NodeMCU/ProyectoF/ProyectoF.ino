@@ -85,34 +85,28 @@ void mangerWifi()
 void cargaRutas()
 {
   // Ruta para cargar el archivo index.html
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/index.html", String(), false, processor); });
 
   // Ruta para cargar el archivo style.css
-  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
-    request->send(SPIFFS, "/style.css", "text/css");
-  });
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/style.css", "text/css"); });
 
   // Ruta para poner el GPIO alto
-  server.on("/on", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     digitalWrite(ledPin, HIGH);
     MIN = MIN + 15;
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
+    request->send(SPIFFS, "/index.html", String(), false, processor); });
 
   // Ruta para poner el GPIO bajo
-  server.on("/off", HTTP_GET, [](AsyncWebServerRequest * request)
-  {
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     digitalWrite(ledPin, LOW);
     if (MIN >= 30) {
       MIN = MIN - 15;
     }
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
+    request->send(SPIFFS, "/index.html", String(), false, processor); });
 }
 
 // Remplazamos el marcador con el estado del  LED
@@ -222,6 +216,12 @@ void setup()
   delay(15000);
 
   server.begin();
+  timeClient.update();
+  time_t epochTime = timeClient.getEpochTime();
+  struct tm *ptm = gmtime((time_t *)&epochTime);
+  int currentSecond = ptm->tm_sec;
+  
+  randomSeed(currentSecond);
 }
 
 //-------------------loop----------------------------
@@ -244,7 +244,7 @@ void fisicos()
   }
   else if (green == 1)
   {
-    //green = 1;
+    // green = 1;
     if (coin1 != 0)
     {
       red = 1;
@@ -302,8 +302,8 @@ void fisicos()
         Serial.println("tu clave es: ");
         randomNumber = random(0, 999);
         time_t epochTime = timeClient.getEpochTime();
-        //Get a time structure
-        struct tm *ptm = gmtime ((time_t *)&epochTime);
+        // Get a time structure
+        struct tm *ptm = gmtime((time_t *)&epochTime);
         int currentMonth = ptm->tm_mon + 1;
         int currentDayMonth = ptm->tm_mday;
         int currentSecond = timeClient.getSeconds();
