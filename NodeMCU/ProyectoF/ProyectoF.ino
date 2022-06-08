@@ -56,8 +56,8 @@ String clave;
 String minutos;
 String user = "juan";
 String pass = "1234";
-String ip = "192.168.0.8";
-String ipM = "192.168.0.11";
+String ip = "192.168.1.3";
+String ipM = "192.168.1.2";
 
 //-------------------el gestor de wifi----------------------
 void mangerWifi()

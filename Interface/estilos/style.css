@@ -64,6 +64,11 @@ header {
     background-color: var(--primario);
     padding-left: 1rem;
     text-align: center;
+    
+}
+
+.bodyC header{
+    height: 11vh;
 }
 
 .contenedor {
@@ -154,6 +159,9 @@ header {
 .contenedor-panel {
     flex-grow: 1;
     display: flex;
+    height: 83vh;
+    overflow-y: auto;
+    position: relative;
 }
 .aside {
     background-color: var(--extra);
@@ -163,6 +171,9 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+
 }
 
 .aside h2 {
@@ -281,12 +292,13 @@ header {
 
 .contenedor-tabla {
     flex-grow: 1;
-    margin-top: 5rem;
-    margin-left: 15rem;
+    padding-top: 3rem;
+    padding-left: 15rem;
 }
 
 .tablas {
     max-width: 70rem;
+    padding-bottom: 3rem;
 }
 table th {
     background-color: var(--titulo);
@@ -386,6 +398,13 @@ footer{
     background-color: var(--primario);    
     color: var(--blanco);
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bodyC footer{
+    height: 6vh;
 }
 
 footer p{
